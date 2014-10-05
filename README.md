@@ -20,10 +20,10 @@ It accepts the following parameters:
 | value      | default | description                          |
 |------------|---------|--------------------------------------|
 | algorithm  | sha512  | algorithm to use for generating hash |
-| iterations | 2000    | number of hasing iterations to use   |
-| saltLength | 8       | length of the salt.                  |
+| iterations | 4096    | number of hasing iterations to use   |
+| saltLength | 36      | length of the salt.                  |
 
-The returned string from has will looks like the following: 
+The returned string from hash will looks like the following:
 
     {algorithm}${salt}${iterations}${hash}
 

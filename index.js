@@ -6,19 +6,19 @@ var crypto = require("crypto");
  * @typedef HashOptions
  * @type {object}
  * @property {string} [algorithm="sha512"]
- * @property {number} [iterations=2000]
- * @property {number} [saltLength=64]
+ * @property {number} [iterations=4096]
+ * @property {number} [saltLength=32]
  */
 
 /**
  * How many bytes to use for the hash.
  */
-var DEFAULT_SALT_LENGTH = 8;
+var DEFAULT_SALT_LENGTH = 32;
 
 /**
  * Default number of iterations to perform.
  */
-var DEFAULT_ITERATIONS = 2000;
+var DEFAULT_ITERATIONS = 4096;
 
 /**
  * Default algorithm to use.
@@ -59,6 +59,10 @@ function hash (plaintext /*, salt, options*/ ) {
 	if (typeof options.iterations === "undefined" || typeof options.iterations !== "number" || options.iterations < 1) { options.iterations = DEFAULT_ITERATIONS; }
 	if (typeof options.algorithm === "undefined" || typeof options.algorithm !== "string") { options.algorithm = DEFAULT_ALGORITHM; }
 	if (typeof options.saltLength === "undefined" || typeof options.saltLength !== "number" || options.saltLength < 1) { options.saltLength = DEFAULT_SALT_LENGTH; }
+
+	// console.info("got iterations %s", options.iterations)
+	// console.info("got algorithm %s", options.algorithm)
+	// console.info("got saltLength %s", options.saltLength)
 
 	// ensure the specified algorithm is available to crypto.
 	if (crypto.getHashes().indexOf(options.algorithm) === -1) {
