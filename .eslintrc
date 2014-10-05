@@ -1,0 +1,10 @@
+{
+	env: {
+		"node": "true"
+	},
+	rules: {
+		"space-after-keywords": [2, "always"],
+		"valid-jsdoc": [2, {}],
+		"no-extra-parens": true
+	}
+}

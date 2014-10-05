@@ -1,0 +1,19 @@
+{
+  "name": "native-password-hash",
+  "version": "1.0.0",
+  "description": "Native node crypto module wrapper for password hashing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Tyler Waters",
+    "email": "tyler.waters@gmail.com"
+  },
+  "repository" : { 
+    "type" : "git",
+    "url" : "http://github.com/tswaters/node-native-password-hash.git"
+  },
+  "license": "MIT"
+}
