@@ -1,6 +1,6 @@
 {
   "name": "native-password-hash",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Native node crypto module wrapper for password hashing",
   "main": "index.js",
   "scripts": {

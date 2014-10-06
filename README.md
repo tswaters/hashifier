@@ -27,6 +27,21 @@ The returned string from hash will looks like the following:
 
     {algorithm}${salt}${iterations}${hash}
 
+## Benchmark
+
+You can use the benchmark utility to find out how long a given hashing operation takes.
+
+    $ node benchmark.js --help
+    native-password-hash benchmarking utility; determines how long it takes to hash
+    use this to get an idea of what to pass to {options}, given your requirements.
+    usage: node benchmark.js [options] [time]
+    time is the number of milliseconds you want to wait.
+    options:
+    --help show this help.
+    --saltLength length of the salt in bytes
+    --algorithm algorithm to use for hashing.
+    --password password to hash [default=test]
+
 ## License
 
 MIT.
