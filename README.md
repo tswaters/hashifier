@@ -9,10 +9,10 @@ This is a lightweight alternative to using brypt; no compilation steps.
 
 ## Usage
 
-    var pass = require('password-hash');
-    var hash = pass.hash('my password');   // store this somewhere
-    pass.compare('my password', hash);     // true
-    pass.compare('not my password', hash); // false
+    const pass = require('password-hash')
+    const hash = pass.hash('my password') // store this somewhere
+    pass.compare('my password', hash)     // true
+    pass.compare('not my password', hash) // false
 
 You can pass an options object as the last parameter to `hash`.
 It accepts the following parameters:  
