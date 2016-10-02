@@ -1,6 +1,6 @@
 'use strict'
 
-var crypto = require('crypto')
+const crypto = require('crypto')
 
 /**
  * @typedef HashOptions
@@ -13,17 +13,17 @@ var crypto = require('crypto')
 /**
  * How many bytes to use for the hash.
  */
-var DEFAULT_SALT_LENGTH = 32
+const DEFAULT_SALT_LENGTH = 32
 
 /**
  * Default number of iterations to perform.
  */
-var DEFAULT_ITERATIONS = 4096
+const DEFAULT_ITERATIONS = 4096
 
 /**
  * Default algorithm to use.
  */
-var DEFAULT_ALGORITHM = 'sha512'
+const DEFAULT_ALGORITHM = 'sha512'
 
 /**
  * Hashes a value with salt.
@@ -34,7 +34,8 @@ var DEFAULT_ALGORITHM = 'sha512'
  * @throws exception if bad arguments provided.
  */
 function hash (plaintext /*, salt, options*/ ) {
-  var salt, options = {}
+  let salt = null
+  let options = {}
   // figure out what parameters have been passed.
   switch (arguments.length) {
     case 1:
@@ -75,7 +76,8 @@ function hash (plaintext /*, salt, options*/ ) {
   }
 
   // generate the hash.
-  for (var hashed = plaintext, i = 0, I = options.iterations; i < I; i++) {
+  let hashed = plaintext
+  for (let i = 0, I = options.iterations; i < I; i++) {
     hashed = crypto.createHmac(options.algorithm, salt).update(hashed).digest('hex')
   }
 
@@ -101,9 +103,9 @@ module.exports = {
    * @returns {boolean} whether the value matches
    */
   compare: function (plaintext, hashValue) {
-    var values = hashValue.split('$')
-    var salt = values[1]
-    var options = {
+    const values = hashValue.split('$')
+    const salt = values[1]
+    const options = {
       algorithm: values[0],
       iterations: values[2]
     }

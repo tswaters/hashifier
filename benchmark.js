@@ -1,15 +1,15 @@
 
 'use strict'
 
-var DEFAULT_PASS = 'test'
+const DEFAULT_PASS = 'test'
 
-var pass = require('./index.js')
+const pass = require('./index.js')
 
-var args = process.argv.slice(2)
-var showHelp = parseArgument('--help', true)
-var password = parseArgument('--password') || DEFAULT_PASS
-var algorithm = parseArgument('--algorithm')
-var saltLength = parseArgument('--saltLength')
+const args = process.argv.slice(2)
+const showHelp = parseArgument('--help', true)
+const password = parseArgument('--password') || DEFAULT_PASS
+const algorithm = parseArgument('--algorithm')
+let saltLength = parseArgument('--saltLength')
 
 
 if (showHelp || args.length !== 1) {
@@ -17,8 +17,8 @@ if (showHelp || args.length !== 1) {
   process.exit(0)
 }
 
-var strTime = args[0].replace(/ms$/, '')
-var targetTime = parseInt(strTime, 10)
+const strTime = args[0].replace(/ms$/, '')
+const targetTime = parseInt(strTime, 10)
 saltLength = saltLength && parseInt(saltLength, 10)
 
 if (targetTime < 1) {
@@ -33,7 +33,11 @@ pass.hash('')
 // console.info('got algorithm: %s', algorithm)
 // console.info('got saltLength: %s', saltLength)
 
-var iterations = 1, i = 0, timeSpent = 0, start, end
+let iterations = 1
+let i = 0
+let timeSpent = 0
+let start = null
+let end = null
 while (timeSpent < targetTime) {
   start = (new Date()).getTime()
   pass.hash(password, {
@@ -49,7 +53,7 @@ while (timeSpent < targetTime) {
 console.log('%s iterations took %s', iterations, timeSpent + 'ms')
 
 function parseArgument (argName, noarg) {
-  var index = args.indexOf(argName)
+  const index = args.indexOf(argName)
   if (index > -1 && index < args.length - (noarg ? 0 : 1)) {
     return args.splice(index, noarg ? 1 : 2)[ noarg ? 0: 1]
   }
@@ -63,7 +67,7 @@ function error (msg) {
 }
 
 function help () {
-  var msg = [
+  const msg = [
     'native-password-hash benchmarking utility determines how long it takes to hash.',
     'use this to get an idea of what to pass to {options}, given your requirements.',
     'usage: node benchmark.js [options] [time]',
