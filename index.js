@@ -92,7 +92,7 @@ module.exports = {
    * @param {HashOptions} options :: options on how to proceed.
    * @returns {string}  salt;hash
    */
-  hash: function (plaintext, options) {
+  hash (plaintext, options) {
     return hash(plaintext, options)
   },
 
@@ -102,7 +102,7 @@ module.exports = {
    * @param {string} hashValue :: previously hashed value
    * @returns {boolean} whether the value matches
    */
-  compare: function (plaintext, hashValue) {
+  compare (plaintext, hashValue) {
     const values = hashValue.split('$')
     const salt = values[1]
     const options = {

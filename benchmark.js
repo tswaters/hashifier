@@ -41,9 +41,9 @@ let end = null
 while (timeSpent < targetTime) {
   start = (new Date()).getTime()
   pass.hash(password, {
-    iterations: iterations,
-    algorithm: algorithm,
-    saltLength: saltLength
+    iterations,
+    algorithm,
+    saltLength
   })
   end = (new Date()).getTime()
   timeSpent = (end - start)
