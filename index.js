@@ -1,114 +1,77 @@
+
 'use strict'
 
 const crypto = require('crypto')
+const DEFAULT_ITERATIONS = 100000
+const DEFAULT_ALGORITHM = 'sha512'
+const DEFAULT_ENCODING = 'hex'
+const DEFAULT_SALT_LENGTH = 128
+const DEFAULT_KEY_LEN = 128
 
 /**
  * @typedef HashOptions
- * @type {object}
- * @property {string} [algorithm='sha512']
- * @property {number} [iterations=4096]
- * @property {number} [saltLength=32]
+ * @property {number} [iterations=100000] number of iterations
+ * @property {string} [algorithm="SHA512"] algorithm to use
+ * @property {string} [outputEncoding="hex"] output encoding
+ * @property {number} [saltLength=128] salt length
+ * @property {number} [keyLength=128] length of generated key
  */
-
-/**
- * How many bytes to use for the hash.
- */
-const DEFAULT_SALT_LENGTH = 32
-
-/**
- * Default number of iterations to perform.
- */
-const DEFAULT_ITERATIONS = 4096
-
-/**
- * Default algorithm to use.
- */
-const DEFAULT_ALGORITHM = 'sha512'
 
 /**
  * Hashes a value with salt.
  * @param {string} plaintext :: string to hash
  * @param {string} [salt] :: salt used to compare.
  * @param {HashOptions} [options] :: options on how to proceed.
- * @returns {string} :: hash
- * @throws exception if bad arguments provided.
+ * @returns {Promise<string>} resolves to hash (throws errors from node-crypto if encountered)
  */
-function hash (plaintext /*, salt, options*/ ) {
-  let salt = null
-  let options = {}
-  // figure out what parameters have been passed.
-  switch (arguments.length) {
-    case 1:
-      break
-    case 2:
-      if (typeof arguments[1] === 'object') {
-        options = arguments[1]
-      }
-      else {
-        salt = arguments[1]
-      }
-      break
-    case 3:
-      salt = arguments[1]
-      options = arguments[2]
-      break
-    default:
-      throw 'Invalid arguments provided.'
+function hasher (plaintext, saltInput = null, options = {}) {
+
+  if (saltInput != null && typeof saltInput === 'object') {
+    options = saltInput
+    saltInput = null
   }
 
-  // load default options if unprovided or of the wrong type.
-  if (typeof options.iterations === 'undefined' || typeof options.iterations !== 'number' || options.iterations < 1) { options.iterations = DEFAULT_ITERATIONS }
-  if (typeof options.algorithm === 'undefined' || typeof options.algorithm !== 'string') { options.algorithm = DEFAULT_ALGORITHM }
-  if (typeof options.saltLength === 'undefined' || typeof options.saltLength !== 'number' || options.saltLength < 1) { options.saltLength = DEFAULT_SALT_LENGTH }
+  const {
+    iterations = DEFAULT_ITERATIONS,
+    saltLength = DEFAULT_SALT_LENGTH,
+    algorithm = DEFAULT_ALGORITHM,
+    encoding = DEFAULT_ENCODING,
+    keyLen = DEFAULT_KEY_LEN
+  } = options
 
-  // console.info('got iterations %s', options.iterations)
-  // console.info('got algorithm %s', options.algorithm)
-  // console.info('got saltLength %s', options.saltLength)
-
-  // ensure the specified algorithm is available to crypto.
-  if (crypto.getHashes().indexOf(options.algorithm) === -1) {
-    throw 'Hashing algorithm ' + options.algorithm + ' is not available.'
-  }
-
-  // if has hasn't been provided, generate it.
-  if (typeof salt === 'undefined' || typeof salt !== 'string') {
-    salt = crypto.randomBytes(options.saltLength).toString('hex')
-  }
-
-  // generate the hash.
-  let hashed = plaintext
-  for (let i = 0, I = options.iterations; i < I; i++) {
-    hashed = crypto.createHmac(options.algorithm, salt).update(hashed).digest('hex')
-  }
-
-  return [options.algorithm, salt, options.iterations, hashed].join('$')
+  return new Promise((resolve, reject) => {
+    if (saltInput) { return resolve(saltInput) }
+    crypto.randomBytes(saltLength, (err, saltValue) => {
+      if (err) { return reject(err) }
+      resolve(saltValue.toString(encoding))
+    })
+  })
+  .then(saltValue => {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(plaintext, saltValue, iterations, keyLen, algorithm, (err, result) => {
+        if (err) { return reject(err) }
+        const hash = result.toString(encoding)
+        const salt = saltValue.toString(encoding)
+        resolve({hash, salt})
+      })
+    })
+  })
 }
 
-module.exports = {
+/**
+ * Hashes a plaintext value.
+ * @param {string} plaintext :: string to hash.
+ * @param {HashOptions} options :: options on how to proceed.
+ * @returns {Promise<string>} hash value.
+ */
+exports.hash = (plaintext, options) => hasher(plaintext, options)
 
-  /**
-   * Hashes a plaintext value.
-   * @param {string} plaintext :: string to hash.
-   * @param {HashOptions} options :: options on how to proceed.
-   * @returns {string}  salt;hash
-   */
-  hash (plaintext, options) {
-    return hash(plaintext, options)
-  },
-
-  /**
-   * Compares a previously hashed value with plaintext
-   * @param {string} plaintext :: string to compare
-   * @param {string} hashValue :: previously hashed value
-   * @returns {boolean} whether the value matches
-   */
-  compare (plaintext, hashValue) {
-    const values = hashValue.split('$')
-    const salt = values[1]
-    const options = {
-      algorithm: values[0],
-      iterations: values[2]
-    }
-    return hash(plaintext, salt, options) === hashValue
-  }
-}
+/**
+ * Compares a previously hashed value with plaintext
+ * @param {string} plaintext :: string to compare
+ * @param {string} hashValue :: previously hashed value
+ * @param {HashOptions} options options to provide for hashing.
+ * @returns {Promise<bool>} whether the value matches
+ */
+exports.compare = (plaintext, hashValue, salt, options) => hasher(plaintext, salt, options)
+  .then(computed => computed.hash === hashValue)
