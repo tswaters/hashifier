@@ -1,19 +1,35 @@
 {
-  "name": "native-password-hash",
-  "version": "1.1.0",
-  "description": "Native node crypto module wrapper for password hashing",
+  "name": "hashifier",
+  "version": "1.0.0",
+  "description": "crypto module wrapper for password hashing using pbkdf2",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "lint": "eslint .",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha",
+    "coveralls": "npm run coverage && istanbul-coveralls"
   },
   "author": {
     "name": "Tyler Waters",
     "email": "tyler.waters@gmail.com"
   },
-  "repository" : { 
-    "type" : "git",
-    "url" : "http://github.com/tswaters/node-native-password-hash.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/tswaters/hashifier.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "crypto",
+    "hash",
+    "no dependencies",
+    "pbkdf2",
+    "password",
+    "promise"
+  ],
+  "devDependencies": {
+    "eslint": "^3.7.0",
+    "istanbul": "^0.4.5",
+    "istanbul-coveralls": "^1.0.3",
+    "mocha": "^3.1.0"
+  }
 }

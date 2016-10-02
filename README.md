@@ -1,47 +1,76 @@
-# native-password-hash
+# Hashifier
 
-Wrapper to nodejs' native crypto library, for hashing passwords.
-This is a lightweight alternative to using brypt; no compilation steps.
+[![npm version][npm-badge]][npm-url]
+[![Build Status][travis-badge]][travis-url]
+[![Coverage Status][coveralls-badge]][coveralls-url]
+[![Dependency Status][david-badge]][david-url]
+
+Light-weight wrapper to nodejs crypto library for hashing passwords using pbkdf2
+
+## Requirements
+
+node 6.
 
 ## Install
 
-    npm install native-password-hash
+```
+npm install hashifier
+```
+
+## API
+
+Each function returns a promise that resolves as specified.
+
+Any errors encountered by the crypto module will reject the promise.
+
+_hash(plainText, options?)_
+ - hash a given password
+ - resolves to an object, {hash, salt}
+ - see options below
+
+_compare(plainText, hash, salt, options?)_
+ - compare a previously hashed password
+ - resolves to a boolean
+ - see options below
+
+### options
+
+- _iterations_ - number of iterations to hash (default 100,000)
+- _algorithm_ - algorithm to use for hashing (default sha512)
+- _encoding_ - output encoding to use (default hex)
+- _saltLength_ - number of bytes to use for the salt (default 128)
+- _keyLength_ - length of the key (default 128)
 
 ## Usage
 
-    const pass = require('password-hash')
-    const hash = pass.hash('my password') // store this somewhere
-    pass.compare('my password', hash)     // true
-    pass.compare('not my password', hash) // false
+```js
+const hashifier = require('hashifier')
 
-You can pass an options object as the last parameter to `hash`.
-It accepts the following parameters:  
+// options are optional, following is default
+const options = {
+  iterations: 100000
+  algorithm: 'sha512'
+  encoding: 'hex'
+  saltLength: = 128
+  keyLength: 128
+}
 
-| value      | default | description                          |
-|------------|---------|--------------------------------------|
-| algorithm  | sha512  | algorithm to use for generating hash |
-| iterations | 4096    | number of hasing iterations to use   |
-| saltLength | 36      | length of the salt.                  |
-
-The returned string from hash will looks like the following:
-
-    {algorithm}${salt}${iterations}${hash}
-
-## Benchmark
-
-You can use the benchmark utility to find out how long a given hashing operation takes.
-
-    $ node benchmark.js --help
-    native-password-hash benchmarking utility; determines how long it takes to hash
-    use this to get an idea of what to pass to {options}, given your requirements.
-    usage: node benchmark.js [options] [time]
-    time is the number of milliseconds you want to wait.
-    options:
-    --help show this help.
-    --saltLength length of the salt in bytes
-    --algorithm algorithm to use for hashing.
-    --password password to hash [default=test]
+hashifier.hash('my password', options) // {salt: string, hash: string}
+  .then(result => {
+    hashifier.compare('my password', result.hash, result.salt, options).then(result => assert.ok(result)) // true
+    hashifier.compare('not my password', result.hash, result.salt, options).then(result => result.notOk(result)) // false
+  })
+```
 
 ## License
 
 MIT.
+
+[npm-badge]: https://badge.fury.io/js/hashifier.svg
+[npm-url]: https://badge.fury.io/js/hashifier
+[travis-badge]: https://travis-ci.org/tswaters/hashifier.svg?branch=master
+[travis-url]: https://travis-ci.org/tswaters/hashifier
+[coveralls-badge]: https://coveralls.io/repos/github/tswaters/hashifier/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/tswaters/hashifier?branch=master
+[david-badge]: https://david-dm.org/tswaters/hashifier.svg
+[david-url]: https://david-dm.org/tswaters/hashifier
